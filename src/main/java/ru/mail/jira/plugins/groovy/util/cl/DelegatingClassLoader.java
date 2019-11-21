@@ -2,7 +2,7 @@ package ru.mail.jira.plugins.groovy.util.cl;
 
 import com.atlassian.plugin.Plugin;
 import com.atlassian.plugin.PluginState;
-§import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
