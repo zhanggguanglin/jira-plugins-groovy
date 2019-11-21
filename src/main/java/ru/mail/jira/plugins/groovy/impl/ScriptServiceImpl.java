@@ -377,6 +377,7 @@ public class ScriptServiceImpl implements ScriptService, PluginLifecycleAware {
 
         globalVariables.clear();
         bindingProviders.clear();
+        classLoader.flushCache();
     }
 
     @Override

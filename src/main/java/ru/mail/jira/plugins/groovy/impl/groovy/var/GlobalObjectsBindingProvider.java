@@ -145,7 +145,7 @@ public class GlobalObjectsBindingProvider implements BindingProvider, PluginLife
     @Override
     public void onStart() {
         this.unsafeLoadCaches();
-        delegatingClassLoader.registerClassLoader("__go", globalObjectClassLoader);
+        delegatingClassLoader.registerClassLoader("__go", globalObjectClassLoader, false);
         scriptService.registerBindingProvider(this);
     }
 
