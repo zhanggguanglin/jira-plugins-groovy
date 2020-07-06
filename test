@@ -1,0 +1,42 @@
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.MutableIssue;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import com.atlassian.jira.user.preferences.UserPreferencesManager;
+import static com.atlassian.jira.user.preferences.PreferenceKeys.USER_LOCALE;
+
+logger.debug("executing script now!")
+def userPreferencesManager = ComponentAccessor.getUserPreferencesManager()
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def issueService = ComponentAccessor.issueService
+
+
+def cf1 = customFieldManager.getCustomFieldObjectsByName("text1")[0]
+def cf1Value = "haha"
+def cf2 = customFieldManager.getCustomFieldObjectsByName("Begin Date")[0]
+def sdf = new SimpleDateFormat("dd/MMM/yy h:mm a")
+
+if (userPreferencesManager.getExtendedPreferences(currentUser).getString(USER_LOCALE) != null) {
+	logger.error(Locale.ENGLISH.toString())
+    sdf = new SimpleDateFormat("dd/MMM/yy h:mm a", new Locale(userPreferencesManager.getExtendedPreferences(currentUser).getString(USER_LOCALE).substring(2)))
+}
+
+
+def parent = (MutableIssue)issue.getParentObject()
+logger.debug(sdf.format(new Date().getTime()))
+
+
+// 这种方式只适合更新当前工作流的 issue
+//parent.setCustomFieldValue(cf1, cf1Value)
+
+//以下是更新不变化工作流issue的方法， 会自动调用索引和触发变更事件
+def issueInputParameters = issueService.newIssueInputParameters()
+issueInputParameters.addCustomFieldValue(cf1.id,  cf1Value)
+issueInputParameters.addCustomFieldValue(cf2.id, sdf.format(new Date().getTime()))
+def updateValidationResult = issueService.validateUpdate(currentUser, parent.id, issueInputParameters)
+assert updateValidationResult.isValid(): updateValidationResult.errorCollection
+def issueUpdateResult = issueService.update(currentUser, updateValidationResult)
+assert issueUpdateResult.isValid(): issueUpdateResult.errorCollection
+
